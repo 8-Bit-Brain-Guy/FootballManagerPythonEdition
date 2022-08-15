@@ -11,19 +11,51 @@
 '''
 
 from Spieler import *
-vornameListe = ["A", "B", "C"]
-nachnamenListe = ["X", "Y", "Z"]
+from random import *
 
-maxSpieler = min(len(vornameListe), len(nachnamenListe))
-anz = input("Wieviele Spieler sollen erzeugt werden? Maximal %s sind möglich: " %maxSpieler)
-try:
-    anz = int(anz)
-except:
-    print("Eingabe \"%s\" ist ungültig." %anz)
+class Spielergenerator:
+
+    def __init__(self):
+        self.spielerListe = list()
 
 
-for i in range(int(anz)):
-    sp = Spieler()
-    print(i)
+    def ladeNamen(self, test = False):
+        if test == True:
+            self.vornamenListe = ["Lukas", "Ben", "Jonas", "Niklas"]
+            self.nachnamenListe = ["Bauer" , "Fischer", "Wegner", "Rüdiger"]
+            return
+        
+        with open('Vornamenliste.txt') as f:
+            self.vornamenListe = f.read()
+        with open('Nachnamenliste.txt') as f:
+            self.nachnamenListe = f.read()
 
 
+    def generiereSpieler(self):
+        maxSpieler = min(len(self.vornamenListe), len(self.nachnamenListe))
+        anz = input("Wieviele Spieler sollen erzeugt werden? Maximal %s sind möglich: " %maxSpieler)
+        try:
+            anz = int(anz)
+        except:
+            print("Eingabe \"%s\" ist ungültig." %anz)
+
+        for i in range(int(anz)):
+            vn = randrange(0, len(self.vornamenListe))
+            nn = randrange(0, len(self.nachnamenListe))
+            sp = Spieler(self.vornamenListe[vn], self.nachnamenListe[nn])
+            self.spielerListe.append(sp)
+
+
+    def printe(self):
+        for i in range(len(self.spielerListe)):
+            print(self.spielerListe[i].__dict__)
+
+
+
+# Hauptprogramm
+if __name__ == "__main__":
+    sg = Spielergenerator()
+    sg.ladeNamen(True)
+#    sg.printe()
+    sg.generiereSpieler()
+    sg.printe()

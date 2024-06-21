@@ -10,40 +10,46 @@
 
 '''
 import sqlite3
-from Spieler import *
+## from Spieler import *
 from random import *
+
+####        self.vorname = vn
+####        self.nachname = nn
+####        self.alter = alter
+####        self.gehalt = ge
+####        self.spielstaerke = ss
+
 
 class Spielergenerator:
 
     def __init__(self):
         self.spielerListe = list()
+        self.vornamensListe = list()
+        self.nachnamensListe = list()
 
 
     def ladeNamen(self, test = False):
-        if test == True:
-            self.vornamenListe = ["Lukas", "Ben", "Jonas", "Niklas"]
-            self.nachnamenListe = ["Bauer" , "Fischer", "Wegner", "Rüdiger"]
-            return
-
-        with open('Vornamenliste.txt') as f:
-            self.vornamenListe = f.read()
-        with open('Nachnamenliste.txt') as f:
-            self.nachnamenListe = f.read()
+        with open('Vornamensliste.txt') as file:
+            for line in file:
+                self.vornamensListe.append(line.rstrip())
+        with open('Nachnamensliste.txt') as file:
+            for line in file:
+                self.nachnamensListe.append(line.rstrip())
 
 
     def generiereSpieler(self):
-        maxSpieler = min(len(self.vornamenListe), len(self.nachnamenListe))
-        anz = input("Wieviele Spieler sollen erzeugt werden? Maximal %s sind möglich: " %maxSpieler)
-        try:
-            anz = int(anz)
-        except:
-            print("Eingabe \"%s\" ist ungültig." %anz)
+        vorname = randrange(0, len(self.vornamensListe))
+        nachname = randrange(0, len(self.nachnamensListe))
+        alter = randrange(20, 60)
+        gehalt = round(uniform(50000.0, 1000000.0), 2)
+        spielstaerke = 100*random()
 
-        for i in range(int(anz)):
-            vn = randrange(0, len(self.vornamenListe))
-            nn = randrange(0, len(self.nachnamenListe))
-            sp = Spieler(self.vornamenListe[vn], self.nachnamenListe[nn])
-            self.spielerListe.append(sp)
+        print("Spieler: %s %s, Alter: %d, Gehalt: %f, Spielstärke: %f" %(self.vornamensListe[vorname], self.nachnamensListe[nachname], alter, gehalt, spielstaerke))
+        return(self.vornamensListe[vorname], self.nachnamensListe[nachname], alter, gehalt, spielstaerke)
+
+
+    def speicherSpieler(self):
+        return
 
 
     def printe(self):
@@ -55,11 +61,15 @@ class Spielergenerator:
 # Hauptprogramm
 if __name__ == "__main__":
     con = sqlite3.connect("..\FMPE.db")
+    cur = con.cursor()
 
+    sg = Spielergenerator()
+    sg.ladeNamen()
+    v,n,a,g,s = sg.generiereSpieler()
 
+    ## res = cur.execute("SELECT name FROM sqlite_master")
+    ## INSERT INTO Spieler (Vorname, Nachname, "Alter", Gehalt, Spielstaerke) VALUES ("Mueller", "Mario", 33, 200311.0, 34.44)
 
-###     sg = Spielergenerator()
-###     sg.ladeNamen(True)
-### #    sg.printe()
-###     sg.generiereSpieler()
-###     sg.printe()
+    res = cur.execute('INSERT INTO Spieler (Vorname, Nachname, "Alter", Gehalt, Spielstaerke) VALUES ("%s", "%s", %d, %f, %f)' %(v, n, a, g, s))
+    con.commit()
+    con.close()

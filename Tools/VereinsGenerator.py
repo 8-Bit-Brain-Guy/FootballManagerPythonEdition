@@ -1,12 +1,6 @@
 '''
-    SpielerGenerator.py
-    Pythonskript zur Erzeugung einer Reihe von random Spielern.
-
-    - Lade Vornamens- und Nachnamensliste
-    - Generiere zufällige Konfiguration aus Vor- und Nachname
-    - Erzeuige Spieler Objekt
-    - Weise Spieler Objekt einzelne Vor- Nachnamenkombination zu
-    - Generiere für Spieler Objekt Zufalls- Alter, Trainingslevel und Motivation.
+    Vereinsgenerator.py
+    Pythonskript zur Übertragung der Vereinsdaten aus der Testdatei in die Datenbank.
 
 '''
 import sqlite3
@@ -20,6 +14,26 @@ from random import *
 ####        self.spielstaerke = ss
 
 
+
+con = sqlite3.connect("..\FMPE.db")
+cur = con.cursor()
+
+Vereinsliste = list()
+
+with open('Vereinsliste.txt') as file:
+    for line in file:
+        Vereinsliste.append(line.rstrip())
+
+for v in Vereinsliste:
+    res = cur.execute('INSERT INTO Vereine (Name) VALUES ("%s")' %(v))
+
+con.commit()
+con.close()
+
+
+
+
+'''
 class Spielergenerator:
 
     def __init__(self):
@@ -79,3 +93,5 @@ if __name__ == "__main__":
 
     con.commit()
     con.close()
+
+'''
